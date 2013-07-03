@@ -1,47 +1,67 @@
 'use strict';
 
 var grunt = require('grunt');
+var fs = require('fs');
 
-/*
-  ======== A Handy Little Nodeunit Reference ========
-  https://github.com/caolan/nodeunit
+function readFile(file) {
+  return grunt.util.normalizelf(grunt.file.read(file));  
+}
 
-  Test methods:
-    test.expect(numAssertions)
-    test.done()
-  Test assertions:
-    test.ok(value, [message])
-    test.equal(actual, expected, [message])
-    test.notEqual(actual, expected, [message])
-    test.deepEqual(actual, expected, [message])
-    test.notDeepEqual(actual, expected, [message])
-    test.strictEqual(actual, expected, [message])
-    test.notStrictEqual(actual, expected, [message])
-    test.throws(block, [error], [message])
-    test.doesNotThrow(block, [error], [message])
-    test.ifError(value)
-*/
+function assertFileEquality(test, pathToActual, pathToExpected, message) {
+  var actual = readFile(pathToActual);
+  var expected = readFile(pathToExpected);
+  test.equal(expected, actual, message);
+}
 
 exports.lsc = {
-  setUp: function(done) {
-    // setup here if necessary
-    done();
-  },
-  default_options: function(test) {
-    test.expect(1);
+  noOptions: function(test) {
+    test.expect(2);
 
-    var actual = grunt.file.read('tmp/default_options');
-    var expected = grunt.file.read('test/expected/default_options');
-    test.equal(actual, expected, 'should describe what the default behavior is.');
+    assertFileEquality(test,
+      'tmp/click.js',
+      'test/expected/click.js',
+      'Should compile LiveScript to JavaScript.');
+
+    assertFileEquality(test,
+      'tmp/compiledThenJoined.js',
+      'test/expected/compiledThenJoined.js',
+      'Should compile LiveScript files to JavaScript, then concatenate the results into one file.');
 
     test.done();
   },
-  custom_options: function(test) {
+  bare: function(test) {
+    test.expect(2);
+
+    assertFileEquality(test,
+      'tmp/bareClick.js',
+      'test/expected/bareClick.js',
+      'Should compile LiveScript to JavaScript w/o a function wrapper.');
+
+    assertFileEquality(test,
+      'tmp/bareCompiledThenJoined.js',
+      'test/expected/bareCompiledThenJoined.js',
+      'Should compile LiveScript files to JavaScript, then concatenate the results into one file,' + 
+      ' w/o a toplevel function wrapper.');
+
+    test.done();
+  },
+  join: function(test) {
     test.expect(1);
 
-    var actual = grunt.file.read('tmp/custom_options');
-    var expected = grunt.file.read('test/expected/custom_options');
-    test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
+    assertFileEquality(test,
+      'tmp/joinedThenCompiled.js',
+      'test/expected/joinedThenCompiled.js',
+      'Should join LiveScript files together and then compile them to JavaScript.');
+
+    test.done();
+  },
+  bareAndJoin: function(test) {
+    test.expect(1);
+
+    assertFileEquality(test,
+      'tmp/bareJoinedThenCompiled.js',
+      'test/expected/bareJoinedThenCompiled.js',
+      'Should join LiveScript files together and then compile them to JavaScript, w/o a toplevel function wrapper.');
 
     test.done();
   },

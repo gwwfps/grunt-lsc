@@ -30,21 +30,37 @@ module.exports = function(grunt) {
 
     // Configuration to be run (and then tested).
     lsc: {
-      default_options: {
-        options: {
-        },
+      noOptions: {        
         files: {
-          'tmp/default_options': ['test/fixtures/testing', 'test/fixtures/123'],
-        },
+          'tmp/click.js': ['test/fixtures/click.ls'],
+          'tmp/compiledThenJoined.js': ['test/fixtures/take.ls', 'test/fixtures/click.ls']
+        }
       },
-      custom_options: {
+      bare: {        
         options: {
-          separator: ': ',
-          punctuation: ' !!!',
+          bare: true
         },
         files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123'],
+          'tmp/bareClick.js': ['test/fixtures/click.ls'],
+          'tmp/bareCompiledThenJoined.js': ['test/fixtures/take.ls', 'test/fixtures/click.ls']
+        }
+      },
+      join: {       
+        options: {
+          join: true
         },
+        files: {
+          'tmp/joinedThenCompiled.js': ['test/fixtures/take.ls', 'test/fixtures/click.ls']
+        }
+      },
+      bareAndJoin: {
+        options: {
+          bare: true,
+          join: true
+        },
+        files: {
+          'tmp/bareJoinedThenCompiled.js': ['test/fixtures/take.ls', 'test/fixtures/click.ls']
+        }
       },
     },
 
