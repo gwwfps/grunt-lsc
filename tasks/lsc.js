@@ -6,45 +6,77 @@
  * Licensed under the MIT license.
  */
 
-'use strict';
 
 module.exports = function(grunt) {
+  'use strict';
 
-  // Please see the Grunt documentation for more information regarding task
-  // creation: http://gruntjs.com/creating-tasks
+  var path = require('path');
+  var _ = grunt.util._;
 
-  grunt.registerMultiTask('lsc', 'Your task description goes here.', function() {
-    // Merge task-specific and/or target-specific options with these defaults.
+  grunt.registerMultiTask('lsc', 'Compile LiveScript file(s).', function() {
     var options = this.options({
-      punctuation: '.',
-      separator: ', '
+      bare: false,
+      join: false
     });
 
-    // Iterate over all specified file groups.
-    this.files.forEach(function(f) {
-      // Concat specified files.
-      var src = f.src.filter(function(filepath) {
-        // Warn on and remove invalid source files (if nonull was set).
-        if (!grunt.file.exists(filepath)) {
-          grunt.log.warn('Source file "' + filepath + '" not found.');
-          return false;
-        } else {
-          return true;
-        }
-      }).map(function(filepath) {
-        // Read file source.
-        return grunt.file.read(filepath);
-      }).join(grunt.util.normalizelf(options.separator));
+    grunt.verbose.writeflags(options, 'Options');    
 
-      // Handle options.
-      src += options.punctuation;
-
-      // Write the destination file.
-      grunt.file.write(f.dest, src);
-
-      // Print a success message.
-      grunt.log.writeln('File "' + f.dest + '" created.');
-    });
+    this.files.forEach(_.partial(processFileGroup, options));
   });
+
+  var processFileGroup = function(options, fileGroup) {
+    var files = fileGroup.src.filter(function(file) {
+      if (grunt.file.exists(file)) {
+        return true;
+      } else {
+        grunt.log.warn('Cannot find file: ' + file);
+        return false;
+      }            
+    });
+    
+    var compile = options.join === true ? joinThenCompile : compileThenJoin;    
+    writeFile(fileGroup.dest, compile(files, options));
+  };
+
+  var toCompilerOptions = function(options) {
+    return {
+      bare: options.bare
+    };
+  };
+
+  var joinThenCompile = function (files, options) {
+    var src = files.map(grunt.file.read).join(grunt.util.linefeed);
+    return compileLs(src, options);
+  };
+
+  var compileThenJoin = function(files, options) {
+    return files.map(function(filepath) {
+      var code = grunt.file.read(filepath);
+      return compileLs(code, options, filepath);
+    }).join(grunt.util.linefeed);
+  };
+
+  var writeFile = function (path, output) {    
+    if (output.length < 1) {
+      grunt.log.warn('Destination (' + path + ') not written because compiled files were empty.');
+    } else {      
+      grunt.file.write(path, output);
+      grunt.log.writeln('File ' + path + ' created.');
+    }
+  };
+
+  var compileLs = function(code, options, filepath) {
+    options = toCompilerOptions(options);
+    if (filepath) {
+      options.filename = filepath;
+    }
+
+    try {      
+      return require('LiveScript').compile(code, options);    
+    } catch (e) {
+      grunt.log.error(e);
+      grunt.fail.warn('Failed to compile LiveScript.');
+    }
+  };
 
 };
