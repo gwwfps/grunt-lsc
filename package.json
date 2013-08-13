@@ -1,12 +1,18 @@
 {
   "name": "grunt-lsc",
   "description": "Grunt plugin for compiling LiveScript files.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage": "https://github.com/gwwfps/grunt-lsc",
   "author": {
     "name": "David Zhang",
     "email": "gwwfps@gmail.com"
   },
+  "contributors": [
+    {
+      "name": "Mike Pearson",
+      "email": "gmp26@cam.ac.uk"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/gwwfps/grunt-lsc.git"
