@@ -14,7 +14,9 @@ take = curry$(function(n, list){
 take(2, [1, 2, 3, 4, 5]);
 takeThree = take(3);
 takeThree([3, 4, 5, 6, 7, 8]);
-lastThree = compose$([reverse, takeThree, reverse]);
+lastThree = function(){
+  return reverse(takeThree(reverse.apply(this, arguments)));
+};
 lastThree([1, 2, 3, 4, 5, 6, 7, 8]);
 $('h1').on('click', function(){
   alert('boom!');
@@ -31,11 +33,4 @@ function curry$(f, bound){
     } : f;
   };
   return _curry();
-}
-function compose$(fs){
-  return function(){
-    var i, args = arguments;
-    for (i = fs.length; i > 0; --i) { args = [fs[i-1].apply(this, args)]; }
-    return args[0];
-  };
 }
