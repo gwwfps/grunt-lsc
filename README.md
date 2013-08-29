@@ -2,6 +2,8 @@
 
 > Grunt plugin for compiling LiveScript files.
 
+[![NPM](https://nodei.co/npm/grunt-lsc.png)](https://nodei.co/npm/grunt-lsc/)
+
 ## Getting Started
 This plugin requires Grunt `~0.4.1`
 
