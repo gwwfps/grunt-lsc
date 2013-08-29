@@ -96,4 +96,5 @@ grunt.initConfig({
 ```
 
 ## Release History
+- 1.0.1 - Updated for LiveScript 1.2 (courtesy of @gmp26).
 - 1.0 - Initial release.
